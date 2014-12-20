@@ -852,6 +852,45 @@ script WEEB_ENTER ENTER
             TakeInventory("AcesHigh", 1);
     // This concludes the block of code done by Kyle873.
     // You may now applaud his genius.
+		
+		// Tighten acceleration on the ground
+		int xv = GetActorVelX(0);
+		int yv = GetActorVelY(0);
+		if( CheckInventory("OnTheGround") && ( GetPlayerInput( -1, MODINPUT_SIDEMOVE ) != 0 || GetPlayerInput( -1, MODINPUT_FORWARDMOVE ) != 0 ) )
+		{
+			
+				int inputRange;
+				int threshhold = 600000;
+				
+				if( GetCVar("cl_run") || keyDown( BT_SPEED ) )
+				{
+					inputRange = 10240;
+				}
+				else
+				{
+					inputRange = 6144;
+				}
+				
+				int axv = GetPlayerInput( -1, MODINPUT_SIDEMOVE ) / inputRange;
+				int ayv = GetPlayerInput( -1, MODINPUT_FORWARDMOVE ) / inputRange;
+				
+				if( ( xv < threshhold && axv > 0 ) || ( xv > -threshhold && axv < 0 ) )
+				{
+					ThrustThing( KurtAngle + 192, axv, 0, 0 );
+				}
+				if( ( yv < threshhold && ayv > 0 ) || ( yv > -threshhold && ayv < 0 ) )
+				{
+					ThrustThing( KurtAngle + 0, ayv, 0, 0 );
+				}
+		}
+		
+		// Tighten deceleration on the ground
+		xv = GetActorVelX(0);
+		yv = GetActorVelY(0);
+		if( CheckInventory("OnTheGround") && GetPlayerInput( -1, MODINPUT_SIDEMOVE ) == 0 && GetPlayerInput( -1, MODINPUT_FORWARDMOVE ) == 0 )
+		{
+			SetActorVelocity( 0, xv - (xv / 2), yv - (yv / 2), GetActorVelZ(0), 0, true );
+		}
 
         // Dodging
         if (CheckInventory("GhostStepCooldown") == 0 && CheckInventory("GhostStepDone") == 0)
